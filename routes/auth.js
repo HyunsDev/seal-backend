@@ -37,14 +37,14 @@ router.post('/sign-in', async (req, res) => {
         return
     }
 
-    const hashedPassword = crypto.pbkdf2Sync(body.password, result[0].passwordSalt, 8, 64, 'sha512').toString('base64')
-    if (hashedPassword !== user.password) {
+    const hashedPassword = crypto.pbkdf2Sync(body.password, result[0][0].passwordSalt, 8, 64, 'sha512').toString('base64')
+    if (hashedPassword !== result[0][0].password) {
         res.status(400).json({code: 'wrong_password'})
         return
     }
 
     const token = jwt.sign({
-        id: result.id
+        id: result[0][0].id
     }, process.env.JWT_SECRET, {
         issuer: 'seal-api.hyuns.dev',
         subject:'user'
@@ -77,7 +77,7 @@ router.post('/sign-up', async (req, res) => {
 
     const salt = Math.round((new Date().valueOf() * Math.random())) + "";
     const hashedPassword = crypto.pbkdf2Sync(body.password, salt, 8, 64, 'sha512').toString('base64')
-    const result2 = await conn.query('INSERT INTO `user` (userId, name, grade, class, number, type, phone, password, passwordSalt, createdAt, updatedAt) value (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [body.id, body.name, body.grade, body.class, body.number, body.type, body.phone, hashedPassword, salt, now, now])
+    const result2 = await conn.query('INSERT INTO `user` (userId, name, grade, class, number, type, phone, password, passwordSalt, createdAt, updatedAt, year) value (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 2022)', [body.id, body.name, body.grade, body.class, body.number, body.type, body.phone, hashedPassword, salt, now, now])
     conn.release()
 
     const token = jwt.sign({

@@ -1,7 +1,7 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 
-export function tokenCheck(req, res, next) {
+module.exports.tokenCheck = function tokenCheck(req, res, next) {
     if (!req.header('Authorization')) {
         res.status(401).json({
             code: 'invalid_token',
